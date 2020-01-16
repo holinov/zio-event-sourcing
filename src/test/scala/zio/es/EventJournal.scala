@@ -1,11 +1,11 @@
 package zio.es
 
 import zio._
-import zio.test._
-import zio.test.Assertion._
-import EventJournalHelpers._
 import zio.es.EventJournal.AggregateBehaviour
 import zio.es.EventJournalHelpers.TestEvent._
+import zio.es.EventJournalHelpers._
+import zio.test.Assertion._
+import zio.test._
 
 //noinspection TypeAnnotation
 object EventJournalHelpers {
@@ -49,10 +49,10 @@ object EventJournalHelpers {
         journal <- EventJournal.inMemory[TestEvent]
         agg     <- journal.create(TestEntityName, CalculatingAggregate)
         sumState <- agg.append(Add(10)) *>
-                     agg.append(Add(20)) *>
-                     agg.append(Mul(5)) *>
-                     agg.append(Div(2)) *>
-                     agg.append(Subs(3))
+          agg.append(Add(20)) *>
+          agg.append(Mul(5)) *>
+          agg.append(Div(2)) *>
+          agg.append(Subs(3))
         sum   <- sumState.state
         state <- agg.state
       } yield assert(sum, equalTo(72)) && assert(state, equalTo(sum))
