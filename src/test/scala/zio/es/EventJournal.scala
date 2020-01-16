@@ -48,8 +48,11 @@ object EventJournalHelpers {
       for {
         journal <- EventJournal.inMemory[TestEvent]
         agg     <- journal.create(TestEntityName, CalculatingAggregate)
-        sumState <- agg.append(Add(10)) *> agg.append(Add(20)) *> agg.append(Mul(5)) *> agg.append(Div(2)) *> agg
-                     .append(Subs(3))
+        sumState <- agg.append(Add(10)) *>
+                     agg.append(Add(20)) *>
+                     agg.append(Mul(5)) *>
+                     agg.append(Div(2)) *>
+                     agg.append(Subs(3))
         sum   <- sumState.state
         state <- agg.state
       } yield assert(sum, equalTo(72)) && assert(state, equalTo(sum))
