@@ -3,8 +3,8 @@ package zio.es
 import java.util.concurrent.ConcurrentHashMap
 
 import zio._
-import zio.stream._
 import zio.es.EventJournal.AggregateBehaviour
+import zio.stream._
 
 class Aggregate[-E, +S] private[es] (
   key: String,
@@ -74,8 +74,9 @@ object EventJournal {
   private class InMemory[E] extends EventJournal[E] {
     private[this] val store: ConcurrentHashMap[String, Vector[E]] = new ConcurrentHashMap()
 
-    private def getEventsFor(key: String)                       = ZIO.effect(store.computeIfAbsent(key, _ => Vector.empty[E]))
-    private def updateEventsFor(key: String, events: Vector[E]) = ZIO.effect(store.put(key, events)).unit
+    private def getEventsFor(key: String): Task[Vector[E]] =
+      ZIO.effect(store.computeIfAbsent(key, _ => Vector.empty[E]))
+    private def updateEventsFor(key: String, events: Vector[E]): Task[Unit] = ZIO.effect(store.put(key, events)).unit
 
     def persistEvent(key: String, event: E): Task[Unit] =
       for {
