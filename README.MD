@@ -38,4 +38,4 @@ It has "event journal" which stores incoming events ordered in time for each ent
 - [ ] Optional state snapshot storage
 - [ ] Storage examples for Cassandra/Scylla and [zio-rocksdb](https://github.com/zio/zio-rocksdb)
 - [ ] [zio-saga](https://github.com/VladKopanev/zio-saga) example
-- [ ] [ZIO Kafka](https://github.com/zio/zio-kafka) example
+- [ ] [zio-kafka](https://github.com/zio/zio-kafka) example
