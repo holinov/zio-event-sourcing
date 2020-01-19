@@ -31,7 +31,7 @@ It has "event journal" which stores incoming events ordered in time for each ent
 ### Drawbacks
 - To get current state of aggregate you need to read all its data (addressed at "read side" by  snapshot storage or other caching techniques)
 - In real life you will need to have some "distributed tracing" support to debug issues
-- Having some problems doing distributed transactions
+- Having some problems doing distributed transactions (addressed by [zio-saga](https://github.com/VladKopanev/zio-saga))
 
 ## TO DO
 - [ ] Publish to JCenter/Maven Central 
