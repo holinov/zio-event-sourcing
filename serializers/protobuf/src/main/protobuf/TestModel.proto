@@ -1,0 +1,13 @@
+syntax = "proto2";
+import "scalapb/scalapb.proto";
+
+option (scalapb.options) = {
+  package_name: "zio.es.serializers.protobuf"
+  flat_package: true
+  single_file: true
+};
+
+message ZIOESSerializationTestModel {
+    required string id     = 1;
+    required bool block    = 3;
+}

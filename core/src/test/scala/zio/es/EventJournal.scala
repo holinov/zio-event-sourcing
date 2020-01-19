@@ -68,12 +68,11 @@ object EventJournalHelpers {
       loadedState <- loaded.state
     } yield assert(loadedState, equalTo(loadedState)))
   )
+
+  val eventJournalSuite = suite("Event Sourcing Specs")(
+    aggregateTestSuite,
+    eventJournalTestSuite
+  )
 }
 
-object EventJournalSpec
-    extends DefaultRunnableSpec(
-      suite("Event Sourcing Specs")(
-        aggregateTestSuite,
-        eventJournalTestSuite
-      )
-    )
+object EventJournalSpec extends DefaultRunnableSpec(eventJournalSuite)
