@@ -35,10 +35,26 @@ lazy val zioDeps = libraryDependencies ++= Seq(
 
 lazy val core = (project in file("core")).settings(moduleSettings("zio-event-sourcing"): _*)
 
-lazy val fileStorage =
-  (project in file("storage/file")).settings(moduleSettings("zio-event-sourcing-file-store"): _*).dependsOn(core)
+lazy val serializerProtobuf =
+  (project in file("serializers/protobuf"))
+    .settings(moduleSettings("zio-event-sourcing-serializer-protobuf"): _*)
+    .settings(
+      PB.protoSources in Test := Seq(file("serializers/protobuf/src/test/protobuf"))
+    )
+    .settings(
+      PB.targets in Compile := Seq(
+        scalapb.gen() -> (sourceManaged in Compile).value
+      ),
+      libraryDependencies += "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf"
+    )
+    .dependsOn(core)
 
-lazy val root = project.aggregate(core, fileStorage)
+lazy val fileStorage =
+  (project in file("storage/file"))
+    .settings(moduleSettings("zio-event-sourcing-file-store"): _*)
+    .dependsOn(core)
+
+lazy val root = project.aggregate(core, serializerProtobuf, fileStorage)
 // Aliases
 addCommandAlias("rel", "reload")
 addCommandAlias("com", "all compile test:compile it:compile")
