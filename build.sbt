@@ -11,7 +11,6 @@ def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] =
   Seq(
     organization := "FruTTecH",
     name := moduleName,
-    //name := "zio-event-sourcing",
     version := "0.0.1",
     scalaVersion := "2.13.1",
     maxErrors := 3,
