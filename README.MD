@@ -35,7 +35,7 @@ It has "event journal" which stores incoming events ordered in time for each ent
 
 ## Usage 
 ```scala
-resolvers += Resolver.bintrayRepo("owner", "repo") 
+resolvers += Resolver.bintrayRepo("holinov", "maven") 
 ```
 
 ```scala
