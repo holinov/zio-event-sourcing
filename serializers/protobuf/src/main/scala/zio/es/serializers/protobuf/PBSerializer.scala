@@ -5,11 +5,11 @@ import zio.es.SerializableEvent
 
 object PBSerializer {
   implicit def serializer[T <: GeneratedMessage with Message[T]](
-    implicit cmp: GeneratedMessageCompanion[T]
+    implicit companion: GeneratedMessageCompanion[T]
   ): SerializableEvent[T] =
     new SerializableEvent[T] {
       override def toBytes(evt: T): Array[Byte] = evt.toByteArray
 
-      override def fromBytes(bytes: Array[Byte]): T = cmp.parseFrom(bytes)
+      override def fromBytes(bytes: Array[Byte]): T = companion.parseFrom(bytes)
     }
 }

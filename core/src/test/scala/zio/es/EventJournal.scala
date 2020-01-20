@@ -1,7 +1,6 @@
 package zio.es
 
 import zio._
-import zio.es.EventJournal.AggregateBehaviour
 import zio.es.EventJournalHelpers.TestEvent._
 import zio.es.EventJournalHelpers._
 import zio.test.Assertion._
