@@ -3,7 +3,6 @@ package zio.es
 import java.util.concurrent.ConcurrentHashMap
 
 import zio._
-import zio.es.EventJournal.AggregateBehaviour
 import zio.stream._
 
 class Aggregate[-E, +S] private[es] (
@@ -12,7 +11,10 @@ class Aggregate[-E, +S] private[es] (
   aggregations: (S, E) => Task[S],
   persist: (String, E) => Task[Unit]
 ) {
-  def state: UIO[S] = aggState.get
+  val state: UIO[S] = aggState.get
+
+  def appendAll(evt: Iterable[E]): Task[Aggregate[E, S]] =
+    ZIO.foreach(evt)(append).map(_.head)
 
   def append(evt: E): Task[Aggregate[E, S]] =
     for {
@@ -65,16 +67,6 @@ abstract class EventJournal[E] {
 }
 
 object EventJournal {
-  case class AggregateBehaviour[-E, S](initialState: S, aggregations: (S, E) => Task[S])
-
-  object AggregateBehaviour {
-    final case class PartialBehaviourBuilder[S](initialState: S) {
-      def aggregate[E](aggregations: (S, E) => Task[S]): AggregateBehaviour[E, S] =
-        AggregateBehaviour(initialState, aggregations) //TODO make non effectfull alternatives
-    }
-
-    def from[S](initialState: S): PartialBehaviourBuilder[S] = PartialBehaviourBuilder(initialState)
-  }
 
   private class InMemory[E] extends EventJournal[E] {
     private[this] val store: ConcurrentHashMap[String, Vector[E]] = new ConcurrentHashMap()
@@ -94,4 +86,6 @@ object EventJournal {
   }
 
   def inMemory[E]: Task[EventJournal[E]] = ZIO.effect(new InMemory[E])
+  def aggregate[E, S](initial: S)(aggregations: (S, E) => Task[S]): Task[AggregateBehaviour[E, S]] =
+    ZIO.succeed(new AggregateBehaviour(initial, aggregations))
 }

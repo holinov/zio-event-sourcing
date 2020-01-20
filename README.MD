@@ -1,11 +1,11 @@
 # ZIO Event Sourcing
-ZIO EventSourcing is library trying to adopt one of CQRS implementations to ZIO way
+ZIO EventSourcing is library trying to adopt one of CQRS implementations to ZIO way.
 
 ## Description
 Most of application could be seen as sequence of user initiated events that change state of the entire system. 
-Keeping this in mind we could say that all entire system state could be restored just by playback of whole history of user initiated events, or some times just a part of them to business-logic processors (if they are "state less")
-But also we need to keep in mind that modern time our services need to be fault-tolerant, scalable and able to adopt to always changing requirements of Clients and Business
-And also we have requirement to provide our marketing team tools to allow to sell our product and keep KPI progress on it  
+Keeping this in mind we could say that all entire system state could be restored just by playback of whole history of user initiated events, or some times just a part of them to business-logic processors (if they are "state less").
+But also we need to keep in mind that modern time our services need to be fault-tolerant, scalable and able to adopt to always changing requirements of Clients and Business.
+And also we have requirement to provide our marketing team tools to allow to sell our product and keep KPI progress on it.  
 
 Combining previous requirements we have that modern system:  
 - Should not lose any of "user initiated data" 
@@ -38,4 +38,4 @@ It has "event journal" which stores incoming events ordered in time for each ent
 - [ ] Optional state snapshot storage
 - [ ] Storage examples for Cassandra/Scylla and [zio-rocksdb](https://github.com/zio/zio-rocksdb)
 - [ ] [zio-saga](https://github.com/VladKopanev/zio-saga) example
-- [ ] [ZIO Kafka](https://github.com/zio/zio-kafka) example
+- [ ] [zio-kafka](https://github.com/zio/zio-kafka) example

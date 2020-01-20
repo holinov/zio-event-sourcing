@@ -1,0 +1,25 @@
+syntax = "proto2";
+import "scalapb/scalapb.proto";
+
+option (scalapb.options) = {
+  package_name: "zio.es.storage.pbfile"
+  flat_package: true
+  single_file: true
+};
+
+message EventJournalsIndex {
+    message Entry {
+        required string entryId = 1;
+        required int64 eventCount = 2;
+    }
+
+    repeated Entry index = 1;
+}
+message EventsJournalStore {
+    message Entry {
+        required int64 eventId = 1;
+        required bytes eventBlob = 2;
+    }
+
+    repeated Entry events = 1;
+}
