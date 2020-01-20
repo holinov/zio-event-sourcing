@@ -33,8 +33,22 @@ It has "event journal" which stores incoming events ordered in time for each ent
 - In real life you will need to have some "distributed tracing" support to debug issues
 - Having some problems doing distributed transactions (addressed by [zio-saga](https://github.com/VladKopanev/zio-saga))
 
+## Usage 
+```scala
+resolvers += Resolver.bintrayRepo("owner", "repo") 
+```
+
+```scala
+libraryDependencies ++= Seq(
+ "FruTTecH" %% "zio-event-sourcingf" % "0.0.1",
+ "FruTTecH" %% "zio-event-sourcing-serializer-protobuf" % "0.0.1",
+ "FruTTecH" %% "zio-event-sourcing-file-store" % "0.0.1"
+)
+```
+
 ## TO DO
-- [ ] Publish to JCenter/Maven Central 
+- [ ] Publish to Maven Central 
+- [X] Publish to Bintray 
 - [ ] Optional state snapshot storage
 - [ ] Storage examples for Cassandra/Scylla and [zio-rocksdb](https://github.com/zio/zio-rocksdb)
 - [ ] [zio-saga](https://github.com/VladKopanev/zio-saga) example
