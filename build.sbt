@@ -1,7 +1,5 @@
 import Versions._
-import sbt.Keys.scalacOptions
-
-addCompilerPlugin(scalafixSemanticdb)
+import sbt.Keys._
 
 resolvers ++= Seq(
   Resolver.mavenLocal,
@@ -13,7 +11,8 @@ lazy val commonSettings = Seq(
   // Refine scalac params from tpolecat for interactive console
   scalacOptions in console --= Seq(
     "-Xfatal-warnings"
-  )
+  ),
+  addCompilerPlugin(scalafixSemanticdb)
 )
 
 def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] = Seq(
@@ -35,7 +34,7 @@ lazy val zioDeps = libraryDependencies ++= Seq(
 )
 
 lazy val protobufSettings = Seq(
-  PB.protoSources in Test += Seq(file("src/test/protobuf")),
+  PB.protoSources in Test ++= Seq(file("src/test/protobuf")),
   PB.targets in Compile := Seq(
     scalapb.gen() -> (sourceManaged in Compile).value
   ),

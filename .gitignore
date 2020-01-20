@@ -1,6 +1,8 @@
 .bloop
 .metals
 .idea
+.vscode
 target
+root/target
 project/target
 project/project
