@@ -12,7 +12,8 @@ lazy val commonSettings = Seq(
   scalacOptions in console --= Seq(
     "-Xfatal-warnings"
   ),
-  addCompilerPlugin(scalafixSemanticdb)
+  addCompilerPlugin(scalafixSemanticdb),
+  licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 )
 
 def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] = Seq(
@@ -55,7 +56,10 @@ lazy val fileStorage =
     .settings(protobufSettings: _*)
     .dependsOn(core, serializerProtobuf)
 
-lazy val root = project.settings(scalacOptions += "-Yrangepos").aggregate(core, serializerProtobuf, fileStorage)
+lazy val root = project
+  .settings(skip in publish := true)
+  .aggregate(core, serializerProtobuf, fileStorage)
+
 // Aliases
 addCommandAlias("rel", "reload")
 addCommandAlias("com", "all compile test:compile it:compile")
