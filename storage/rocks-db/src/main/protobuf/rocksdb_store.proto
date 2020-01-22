@@ -1,0 +1,18 @@
+syntax = "proto2";
+import "scalapb/scalapb.proto";
+
+option (scalapb.options) = {
+  package_name: "zio.es.storage.rocksdb"
+  flat_package: true
+  single_file: true
+};
+
+message RocksDbEventsJournalStore {
+    message Entry {
+        required int32 eventId = 1;
+        required bytes eventBlob = 2;
+    }
+
+    required string entityId = 1;
+    repeated Entry events = 2;
+}
