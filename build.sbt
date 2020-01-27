@@ -4,7 +4,8 @@ import sbt.Keys._
 resolvers ++= Seq(
   Resolver.mavenLocal,
   Resolver.sonatypeRepo("releases"),
-  Resolver.sonatypeRepo("snapshots")
+  Resolver.sonatypeRepo("snapshots"),
+  Resolver.jcenterRepo
 )
 
 lazy val commonSettings = Seq(
@@ -56,9 +57,18 @@ lazy val fileStorage =
     .settings(protobufSettings: _*)
     .dependsOn(core, serializerProtobuf)
 
+lazy val cassandraStorage =
+  (project in file("storage/cassandra"))
+    .settings(moduleSettings("zio-event-sourcing-file-store"): _*)
+    .settings(protobufSettings: _*)
+    .settings(
+      libraryDependencies += "com.datastax.cassandra" % "cassandra-driver-core" % "3.8.0"
+    )
+    .dependsOn(core, serializerProtobuf)
+
 lazy val root = project
   .settings(skip in publish := true)
-  .aggregate(core, serializerProtobuf, fileStorage)
+  .aggregate(core, serializerProtobuf, fileStorage, cassandraStorage)
 
 // Aliases
 addCommandAlias("rel", "reload")

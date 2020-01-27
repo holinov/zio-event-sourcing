@@ -36,6 +36,13 @@ trait SerializableEvent[E] extends Any with Serializable {
   def fromBytes(bytes: Array[Byte]): E
 }
 
+object SerializableEvent {
+  implicit class SerializableEventOps[E](se: SerializableEvent[E]) {
+    def toBytesZ(evt: E): Task[Array[Byte]]     = ZIO.effect(se.toBytes(evt))
+    def fromBytesZ(bytes: Array[Byte]): Task[E] = ZIO.effect(se.fromBytes(bytes))
+  }
+}
+
 abstract class EventJournal[E] {
 
   /**
