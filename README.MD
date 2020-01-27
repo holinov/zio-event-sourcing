@@ -40,7 +40,7 @@ resolvers += Resolver.bintrayRepo("holinov", "maven")
 
 ```sbt
 libraryDependencies ++= Seq(
- "FruTTecH" %% "zio-event-sourcingf" % "0.0.4",
+ "FruTTecH" %% "zio-event-sourcing" % "0.0.4",
  "FruTTecH" %% "zio-event-sourcing-serializer-protobuf" % "0.0.4",
  "FruTTecH" %% "zio-event-sourcing-file-store" % "0.0.4",
  "FruTTecH" %% "zio-event-sourcing-cassandra-store" % "0.0.4"
