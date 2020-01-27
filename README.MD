@@ -51,8 +51,7 @@ libraryDependencies ++= Seq(
 - [ ] Publish to Maven Central 
 - [X] Publish to Bintray 
 - [ ] Optional state snapshot storage
-- [X] Storage examples for Cassandra
-- [ ] Storage examples for Scylla
+- [X] Storage examples for Cassandra/Scylla
 - [ ] Storage examples for [zio-rocksdb](https://github.com/zio/zio-rocksdb)
 - [ ] [zio-saga](https://github.com/VladKopanev/zio-saga) example
 - [ ] [zio-kafka](https://github.com/zio/zio-kafka) example
