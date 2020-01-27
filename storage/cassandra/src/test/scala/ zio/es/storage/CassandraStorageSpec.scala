@@ -74,6 +74,6 @@ object CassandraStorageSpecs {
     serializationTest @@ timeout(timeoutDuration),
     createEmpty @@ timeout(timeoutDuration),
     saveAndLoad @@ timeout(timeoutDuration)
-  ) @@ parallel
+  ) @@ parallel @@ ignore
 }
 object CassandraStorageSpec extends DefaultRunnableSpec(CassandraStorageSpecs.spec)

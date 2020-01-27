@@ -20,7 +20,7 @@ lazy val commonSettings = Seq(
 def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] = Seq(
   organization := "FruTTecH",
   name := moduleName,
-  version := "0.0.3",
+  version := "0.0.4",
   scalaVersion := "2.13.1",
   maxErrors := 3,
   commonSettings,
@@ -59,7 +59,7 @@ lazy val fileStorage =
 
 lazy val cassandraStorage =
   (project in file("storage/cassandra"))
-    .settings(moduleSettings("zio-event-sourcing-file-store"): _*)
+    .settings(moduleSettings("zio-event-sourcing-cassandra-store"): _*)
     .settings(protobufSettings: _*)
     .settings(
       libraryDependencies += "com.datastax.cassandra" % "cassandra-driver-core" % "3.8.0"
