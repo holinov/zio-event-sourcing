@@ -20,7 +20,7 @@ lazy val commonSettings = Seq(
 def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] = Seq(
   organization := "FruTTecH",
   name := moduleName,
-  version := "0.0.1",
+  version := "0.0.2",
   scalaVersion := "2.13.1",
   maxErrors := 3,
   commonSettings,
