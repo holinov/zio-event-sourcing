@@ -38,11 +38,12 @@ It has "event journal" which stores incoming events ordered in time for each ent
 resolvers += Resolver.bintrayRepo("holinov", "maven") 
 ```
 
-```scala
+```sbt
 libraryDependencies ++= Seq(
- "FruTTecH" %% "zio-event-sourcingf" % "0.0.1",
- "FruTTecH" %% "zio-event-sourcing-serializer-protobuf" % "0.0.1",
- "FruTTecH" %% "zio-event-sourcing-file-store" % "0.0.1"
+ "FruTTecH" %% "zio-event-sourcingf" % "0.0.4",
+ "FruTTecH" %% "zio-event-sourcing-serializer-protobuf" % "0.0.4",
+ "FruTTecH" %% "zio-event-sourcing-file-store" % "0.0.4",
+ "FruTTecH" %% "zio-event-sourcing-cassandra-store" % "0.0.4"
 )
 ```
 
@@ -50,6 +51,7 @@ libraryDependencies ++= Seq(
 - [ ] Publish to Maven Central 
 - [X] Publish to Bintray 
 - [ ] Optional state snapshot storage
+- [X] Storage examples for Cassandra
 - [ ] Storage examples for Cassandra/Scylla and [zio-rocksdb](https://github.com/zio/zio-rocksdb)
 - [ ] [zio-saga](https://github.com/VladKopanev/zio-saga) example
 - [ ] [zio-kafka](https://github.com/zio/zio-kafka) example
