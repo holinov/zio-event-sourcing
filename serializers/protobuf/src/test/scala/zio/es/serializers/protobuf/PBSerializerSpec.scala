@@ -1,6 +1,5 @@
 package zio.es.serializers.protobuf
 
-//import zio.es.EventJournalHelpers.{ aggregateTestSuite, eventJournalSuite, eventJournalTestSuite }
 import zio.es.serializers.protobuf.PBSerializer._
 import zio.es.SerializableEvent
 import zio.test.Assertion._
