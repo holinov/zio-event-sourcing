@@ -65,7 +65,7 @@ object RocksDbStorageSpecs {
   private def tmpTestStore = RocksDbStorage.tmpRdb
 
   private val timeoutDuration = 5.second
-  val spec = suite("FileStorage specs")(
+  val spec = suite("RocksDB Storage specs")(
     serializationTest @@ timeout(timeoutDuration),
     createEmpty @@ timeout(timeoutDuration),
     saveAndLoad @@ timeout(timeoutDuration)
