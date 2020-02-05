@@ -47,11 +47,11 @@ libraryDependencies ++= Seq(
 )
 ```
 
-## TO DO
-- [ ] Publish to Maven Central 
+## Roadmap
 - [X] Publish to Bintray 
-- [ ] Optional state snapshot storage
+- [ ] Publish to Maven Central 
 - [X] Storage examples for Cassandra/Scylla
-- [ ] Storage examples for [zio-rocksdb](https://github.com/zio/zio-rocksdb)
+- [X] Storage examples for [zio-rocksdb](https://github.com/zio/zio-rocksdb)
+- [ ] Optional state snapshot storage
 - [ ] [zio-saga](https://github.com/VladKopanev/zio-saga) example
 - [ ] [zio-kafka](https://github.com/zio/zio-kafka) example
