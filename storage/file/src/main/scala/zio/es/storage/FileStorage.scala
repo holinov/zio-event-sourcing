@@ -14,7 +14,6 @@ import zio.es._
 import zio.es.storage.pbfile._
 import zio.stream._
 
-//TODO: implement file storage example implementation
 object FileStorage {
   type StoreEntry = EventsJournalStore.Entry
   type IndexEntry = pbfile.EventJournalsIndex.Entry

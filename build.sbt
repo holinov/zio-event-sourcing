@@ -57,6 +57,18 @@ lazy val fileStorage =
     .settings(protobufSettings: _*)
     .dependsOn(core, serializerProtobuf)
 
+lazy val rockDbStorage =
+  (project in file("storage/rocks-db"))
+    .settings(moduleSettings("zio-event-sourcing-rocks-db-store"): _*)
+    .settings(protobufSettings: _*)
+    .settings(
+      libraryDependencies ++= Seq(
+        "dev.zio"     %% "zio-rocksdb" % ZioRocksDb,
+        "org.rocksdb" % "rocksdbjni"   % "5.5.1"
+      )
+    )
+    .dependsOn(core, serializerProtobuf)
+
 lazy val cassandraStorage =
   (project in file("storage/cassandra"))
     .settings(moduleSettings("zio-event-sourcing-cassandra-store"): _*)
@@ -68,7 +80,13 @@ lazy val cassandraStorage =
 
 lazy val root = project
   .settings(skip in publish := true)
-  .aggregate(core, serializerProtobuf, fileStorage, cassandraStorage)
+  .aggregate(
+    core,
+    serializerProtobuf,
+    fileStorage,
+    rockDbStorage,
+    cassandraStorage
+  )
 
 // Aliases
 addCommandAlias("rel", "reload")
