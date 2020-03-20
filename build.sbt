@@ -76,11 +76,15 @@ lazy val cassandraStorage =
     .dependsOn(core, serializerProtobuf)
 
 skip in publish := true
-crossScalaVersions := Nil
+crossScalaVersions := Seq("2.13.1", "2.12.10")
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 
-lazy val zioEs = (project in file("."))
-  .dependsOn(
+lazy val root = (project in file("."))
+  .settings(
+    crossScalaVersions := Seq("2.13.1", "2.12.10"),
+    licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
+  )
+  .aggregate(
     core,
     serializerProtobuf,
     fileStorage,
