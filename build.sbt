@@ -78,10 +78,9 @@ skip in publish := true
 scalaVersion := "2.13.1"
 crossScalaVersions := Nil
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
-crossScalaVersions := Seq("2.12.10")
+crossScalaVersions := Seq("2.12.10", "2.13.1")
 
-lazy val root = project
-  .settings(skip in publish := true, crossScalaVersions := Nil, name := "zio-event-sourcing-all")
+lazy val root = (project in file("."))
   .aggregate(
     core,
     serializerProtobuf,
