@@ -11,9 +11,8 @@ resolvers ++= Seq(
 def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] = Seq(
   organization := "FruTTecH",
   name := moduleName,
-  scalaVersion := "2.13.1",
-  crossScalaVersions := Seq("2.13.1", "2.12.10"),
   maxErrors := 3,
+  licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   scalacOptions += "-Ywarn-unused",
   scalacOptions in console --= Seq(
     "-Xfatal-warnings"
@@ -77,11 +76,10 @@ lazy val cassandraStorage =
     .dependsOn(core, serializerProtobuf)
 
 skip in publish := true
-crossScalaVersions := Nil
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
+crossScalaVersions := Seq("2.12.10", "2.13.1")
 
-lazy val root = project
-  .settings(skip in publish := true, crossScalaVersions := Nil, name := "zio-event-sourcing-all")
+lazy val root = (project in file("."))
   .aggregate(
     core,
     serializerProtobuf,
@@ -95,4 +93,4 @@ addCommandAlias("rel", "reload")
 addCommandAlias("com", "all compile test:compile it:compile")
 addCommandAlias("fix", "all compile:scalafix test:scalafix")
 addCommandAlias("fmt", "all scalafmtSbt scalafmtAll")
-addCommandAlias("crel", "core/release cross")
+addCommandAlias("crel", "release cross")
