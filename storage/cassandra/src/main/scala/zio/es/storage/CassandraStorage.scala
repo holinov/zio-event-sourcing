@@ -19,10 +19,10 @@ object CassandraStorage extends AsScalaConverters with AsJavaConverters {
   type ManagedSession = Managed[Throwable, Session]
 
   implicit class StoreSessionOps(val session: Session) extends AnyVal { // TODO: do all operations on blocking pool or using `executeAsync`
-    def execute(cql: String, values: Map[String, AnyRef]): Task[ResultSet] = ZIO.effect(session.execute(cql, values))
-    def execute(cql: String, values: Any*): Task[ResultSet]                = ZIO.effect(session.execute(cql, values: _*))
-    def execute(cql: String): Task[ResultSet]                              = ZIO.effect(session.execute(cql))
-    def execute(stmt: Statement): Task[ResultSet]                          = ZIO.effect(session.execute(stmt))
+    def executeMap(cql: String, values: Map[String, AnyRef]): Task[ResultSet] = ZIO.effect(session.execute(cql, values))
+//    def execute(cql: String, values: Any*): Task[ResultSet]                   = ZIO.effect(session.execute(cql, values: _*))
+    def execute(cql: String): Task[ResultSet]     = ZIO.effect(session.execute(cql))
+    def execute(stmt: Statement): Task[ResultSet] = ZIO.effect(session.execute(stmt))
 
     def useKeyspace(ks: String): Task[Unit]  = execute(s"USE $ks").unit
     def dropKeyspace(ks: String): Task[Unit] = execute(s"DROP KEYSPACE $ks").unit
@@ -86,7 +86,7 @@ object CassandraStorage extends AsScalaConverters with AsJavaConverters {
         for {
           stmt <- selectStmt
           resI = session.execute(stmt).map(rr => rr.iterator()).orDie
-          res  = Stream.fromIterator[Throwable, Row](resI.map(it => asScala(it)))
+          res  = Stream.fromJavaIterator[Throwable, Row](resI)
         } yield res
       }.map(row => ser.fromBytes(row.getBytes("payload").array()))
   }

@@ -1,22 +1,20 @@
 package zio.es
 
 import zio._
-import zio.es.EventJournalHelpers.TestEvent._
-import zio.es.EventJournalHelpers._
+import zio.es.TestEvent._
 import zio.test.Assertion._
 import zio.test._
 
+sealed trait TestEvent
+
+object TestEvent {
+  final case class Add(v: Float)  extends TestEvent
+  final case class Subs(v: Float) extends TestEvent
+  final case class Mul(v: Float)  extends TestEvent
+  final case class Div(v: Float)  extends TestEvent
+}
 //noinspection TypeAnnotation
-object EventJournalHelpers {
-
-  sealed trait TestEvent
-
-  object TestEvent {
-    final case class Add(v: Float)  extends TestEvent
-    final case class Subs(v: Float) extends TestEvent
-    final case class Mul(v: Float)  extends TestEvent
-    final case class Div(v: Float)  extends TestEvent
-  }
+object EventJournalSpec extends DefaultRunnableSpec {
 
   val CalculatingAggregate = AggregateBehaviour
     .from(0f)
@@ -54,7 +52,7 @@ object EventJournalHelpers {
           agg.append(Subs(3))
         sum   <- sumState.state
         state <- agg.state
-      } yield assert(sum, equalTo(72)) && assert(state, equalTo(sum))
+      } yield assert(sum)(equalTo(72.0f)) && assert(state)(equalTo(sum))
     }
   )
 
@@ -65,13 +63,11 @@ object EventJournalHelpers {
       _           <- journal.persistEvent(TestEntityName, Add(20))
       loaded      <- journal.load(TestEntityName, CalculatingAggregate)
       loadedState <- loaded.state
-    } yield assert(loadedState, equalTo(loadedState)))
+    } yield assert(loadedState)(equalTo(loadedState)))
   )
 
-  val eventJournalSuite = suite("Event Sourcing Specs")(
+  val spec = suite("Event Sourcing Specs")(
     aggregateTestSuite,
     eventJournalTestSuite
   )
 }
-
-object EventJournalSpec extends DefaultRunnableSpec(eventJournalSuite)

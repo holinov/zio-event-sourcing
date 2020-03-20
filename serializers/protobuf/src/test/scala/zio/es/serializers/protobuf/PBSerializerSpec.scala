@@ -5,13 +5,13 @@ import zio.es.SerializableEvent
 import zio.test.Assertion._
 import zio.test._
 
-object PBSerializerSpecs {
+object PBSerializerSpec extends DefaultRunnableSpec {
   private val serializationTest = test("Should serialize/deserialize `GeneratedMessage` via protobuf") {
     val item         = ZIOESSerializationTestModel("id-1", block = false)
     val ser          = implicitly[SerializableEvent[ZIOESSerializationTestModel]]
     val serBytes     = ser.toBytes(item)
     val deserialized = ser.fromBytes(serBytes)
-    assert(deserialized, equalTo(item))
+    assert(deserialized)(equalTo(item))
   }
 
   //noinspection TypeAnnotation
@@ -19,4 +19,3 @@ object PBSerializerSpecs {
     serializationTest
   )
 }
-object PBSerializerSpec extends DefaultRunnableSpec(PBSerializerSpecs.spec)

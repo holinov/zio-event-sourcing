@@ -12,7 +12,7 @@ import zio.test._
 import org.{ rocksdb => jrocks }
 
 //noinspection TypeAnnotation
-object RocksDbStorageSpecs {
+object RocksDbStorageSpec extends DefaultRunnableSpec {
   jrocks.RocksDB.loadLibrary()
 
   implicit val serializer: SerializableEvent[JournalTestModel] = PBSerializer.serializer[JournalTestModel]
@@ -22,7 +22,7 @@ object RocksDbStorageSpecs {
     val ser          = implicitly[SerializableEvent[JournalTestModel]]
     val serBytes     = ser.toBytes(item)
     val deserialized = ser.fromBytes(serBytes)
-    assert(deserialized, equalTo(item))
+    assert(deserialized)(equalTo(item))
   }
 
   //private val storePath = "testStoreDataRDB/store"
@@ -38,7 +38,7 @@ object RocksDbStorageSpecs {
         testAggregate <- buildTestAggregate
         created       <- store.create(UUID.randomUUID().toString, testAggregate)
         createdState  <- created.state
-      } yield assert(createdState, isEmpty)
+      } yield assert(createdState)(isEmpty)
     }
   }
 
@@ -58,7 +58,7 @@ object RocksDbStorageSpecs {
         createdState  <- aggregate.state
         loaded        <- store.load(entityId, testAggregate)
         loadedState   <- loaded.state
-      } yield assert(loadedState, equalTo(eventsSeq)) && assert(createdState, equalTo(eventsSeq))
+      } yield assert(loadedState)(equalTo(eventsSeq)) && assert(createdState)(equalTo(eventsSeq))
     }
   }
 
@@ -71,4 +71,3 @@ object RocksDbStorageSpecs {
     saveAndLoad @@ timeout(timeoutDuration)
   ) @@ parallel
 }
-object RocksDbStorageSpec extends DefaultRunnableSpec(RocksDbStorageSpecs.spec)

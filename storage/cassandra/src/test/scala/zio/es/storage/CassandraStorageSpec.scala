@@ -12,7 +12,7 @@ import zio.test._
 import zio.test.TestAspect._
 
 //noinspection TypeAnnotation
-object CassandraStorageSpecs {
+object CassandraStorageSpec extends DefaultRunnableSpec {
   implicit val serializer: SerializableEvent[JournalTestModel] = PBSerializer.serializer[JournalTestModel]
 
   private val serializationTest = test("Should find implicit serializer for event") {
@@ -20,7 +20,7 @@ object CassandraStorageSpecs {
     val ser          = implicitly[SerializableEvent[JournalTestModel]]
     val serBytes     = ser.toBytes(item)
     val deserialized = ser.fromBytes(serBytes)
-    assert(deserialized, equalTo(item))
+    assert(deserialized)(equalTo(item))
   }
 
   private def buildTestAggregate: Task[AggregateBehaviour[JournalTestModel, Seq[JournalTestModel]]] =
@@ -28,17 +28,19 @@ object CassandraStorageSpecs {
       case (s, e) => ZIO.effect(s :+ e)
     }
 
-  private val createEmpty = testM("creates empty Aggregate") {
-    tmpTestStore.use { store =>
-      for {
-        testAggregate <- buildTestAggregate
-        created       <- store.create(UUID.randomUUID().toString, testAggregate)
-        createdState  <- created.state
-      } yield assert(createdState, isEmpty)
+  private val createEmpty: ZSpec[Any, Throwable] = suite("creates empty Aggregate") {
+    testM("creates empty Aggregate") {
+      tmpTestStore.use { store =>
+        for {
+          testAggregate <- buildTestAggregate
+          created       <- store.create(UUID.randomUUID().toString, testAggregate)
+          createdState  <- created.state
+        } yield assert(createdState)(hasSize(equalTo(0)))
+      }
     }
   }
 
-  private val saveAndLoad = testM("saves and loads Aggregate") {
+  private val saveAndLoad: ZSpec[Any, Throwable] = testM("check batch-loaded and realtime-loaded states ase same") {
     val eventsSeq = Seq(
       JournalTestModel("id-1", block = false),
       JournalTestModel("id-2", block = true),
@@ -54,7 +56,10 @@ object CassandraStorageSpecs {
         createdState  <- aggregate.state
         loaded        <- store.load(entityId, testAggregate)
         loadedState   <- loaded.state
-      } yield assert(loadedState, equalTo(eventsSeq)) && assert(createdState, equalTo(eventsSeq))
+      } yield {
+        assert(createdState)(hasSameElements(eventsSeq)) &&
+        assert(loadedState)(hasSameElements(eventsSeq))
+      }
     }
   }
 
@@ -70,10 +75,11 @@ object CassandraStorageSpecs {
   }
 
   private val timeoutDuration = 5.second
-  val spec = suite("CassandraStorage specs")(
-    serializationTest @@ timeout(timeoutDuration),
-    createEmpty @@ timeout(timeoutDuration),
-    saveAndLoad @@ timeout(timeoutDuration)
-  ) @@ parallel @@ ignore
+
+  def spec: ZSpec[CassandraStorageSpec.Environment, CassandraStorageSpec.Failure] =
+    suite("CassandraStorage specs")(
+      serializationTest @@ timeout(timeoutDuration),
+      createEmpty @@ timeout(timeoutDuration),
+      saveAndLoad @@ timeout(timeoutDuration)
+    ) @@ parallel @@ ignore
 }
-object CassandraStorageSpec extends DefaultRunnableSpec(CassandraStorageSpecs.spec)

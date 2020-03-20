@@ -43,7 +43,19 @@ object SerializableEvent {
   }
 }
 
-abstract class EventJournal[E] {
+trait ISO[A, B] {
+  def toB(a: A): B
+  def toA(b: B): A
+}
+object ISO {
+  def apply[A, B](implicit iso: ISO[A, B]): ISO[A, B] = iso
+  def apply[A, B](_toB: A => B, _toA: B => A): ISO[A, B] = new ISO[A, B] {
+    override def toB(a: A): B = _toB(a)
+    override def toA(b: B): A = _toA(b)
+  }
+}
+
+trait EventJournal[E] { ej =>
 
   /**
    * Write event to journal (no loaded aggregates will be updated)
@@ -71,6 +83,19 @@ abstract class EventJournal[E] {
       agg <- create[S](key, behaviour)
       res <- loadEvents(key).foldM(agg)(_ appendNoPersist _)
     } yield res
+
+  /**
+   * Allows bi-directional EventJournal[E] <=> EventJournal[E1] transformations
+   */
+  def bimap[E1](implicit iso: ISO[E, E1]): EventJournal[E1] = new EventJournal[E1] {
+    override def persistEvent(key: String, event: E1): Task[Unit] = ej.persistEvent(key, iso.toA(event))
+    override def loadEvents(key: String): Stream[Throwable, E1]   = ej.loadEvents(key).map(iso.toB)
+  }
+
+  /**
+   * Allows bi-directional EventJournal[E] <=> EventJournal[E1] transformations
+   */
+  def bimap[E1](f1: E => E1, f2: E1 => E): EventJournal[E1] = bimap(ISO(f1, f2))
 }
 
 object EventJournal {

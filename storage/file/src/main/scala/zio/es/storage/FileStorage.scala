@@ -3,8 +3,8 @@ package zio.es.storage
 import java.io._
 import java.nio.file._
 import java.util.stream.Collectors
-import scala.jdk.CollectionConverters._
 
+import scala.jdk.CollectionConverters._
 import com.google.protobuf.ByteString
 import scalapb._
 import zio._

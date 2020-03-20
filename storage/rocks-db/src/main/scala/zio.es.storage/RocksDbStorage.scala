@@ -3,14 +3,14 @@ package zio.es.storage
 import zio.{ Managed, Task, UIO, ZIO }
 import zio.es._
 import zio.rocksdb._
-import zio.es.storage.rocksdb._
 import zio.stream._
 import java.io.File
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{ Files, Path }
-import org.{ rocksdb => jrocks }
 
+import org.{ rocksdb => jrocks }
 import com.google.protobuf.ByteString
+import zio.es.storage.rocksdb._
 
 import scala.jdk.CollectionConverters._
 
