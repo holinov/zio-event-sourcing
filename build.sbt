@@ -11,8 +11,6 @@ resolvers ++= Seq(
 def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] = Seq(
   organization := "FruTTecH",
   name := moduleName,
-  scalaVersion := "2.13.1",
-  crossScalaVersions := Seq("2.13.1", "2.12.10"),
   maxErrors := 3,
   scalacOptions += "-Ywarn-unused",
   scalacOptions in console --= Seq(
@@ -79,6 +77,7 @@ lazy val cassandraStorage =
 skip in publish := true
 crossScalaVersions := Nil
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
+crossScalaVersions := Seq("2.13.1", "2.12.10")
 
 lazy val root = project
   .settings(skip in publish := true, crossScalaVersions := Nil, name := "zio-event-sourcing-all")
