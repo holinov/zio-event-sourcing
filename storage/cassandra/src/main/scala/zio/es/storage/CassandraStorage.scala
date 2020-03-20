@@ -18,7 +18,7 @@ object CassandraStorage extends AsScalaConverters with AsJavaConverters {
   type ManagedCluster = Managed[Throwable, Cluster]
   type ManagedSession = Managed[Throwable, Session]
 
-  implicit class StoreSessionOps(val session: Session) extends AnyVal { // TODO: do all operations on blocking pool or using `executeAsync`
+  implicit class StoreSessionOps(private val session: Session) extends AnyVal { // TODO: do all operations on blocking pool or using `executeAsync`
     def executeMap(cql: String, values: Map[String, AnyRef]): Task[ResultSet] = ZIO.effect(session.execute(cql, values))
 //    def execute(cql: String, values: Any*): Task[ResultSet]                   = ZIO.effect(session.execute(cql, values: _*))
     def execute(cql: String): Task[ResultSet]     = ZIO.effect(session.execute(cql))

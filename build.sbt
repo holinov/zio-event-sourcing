@@ -14,6 +14,7 @@ def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] = Seq(
   scalaVersion := "2.13.1",
   crossScalaVersions := Seq("2.13.1", "2.12.10"),
   maxErrors := 3,
+  scalacOptions += "-Ywarn-unused",
   scalacOptions in console --= Seq(
     "-Xfatal-warnings"
   ),
@@ -76,7 +77,7 @@ lazy val cassandraStorage =
     .dependsOn(core, serializerProtobuf)
 
 lazy val root = project
-  .settings(skip in publish := true, crossScalaVersions := Nil, name := "zio-event-sourcing-root")
+  .settings(skip in publish := true, crossScalaVersions := Nil, name := "zio-event-sourcing-all")
   .aggregate(
     core,
     serializerProtobuf,
@@ -90,3 +91,4 @@ addCommandAlias("rel", "reload")
 addCommandAlias("com", "all compile test:compile it:compile")
 addCommandAlias("fix", "all compile:scalafix test:scalafix")
 addCommandAlias("fmt", "all scalafmtSbt scalafmtAll")
+addCommandAlias("rel", "core/release")
