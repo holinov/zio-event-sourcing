@@ -12,6 +12,7 @@ def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] = Seq(
   organization := "FruTTecH",
   name := moduleName,
   maxErrors := 3,
+  licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   scalacOptions += "-Ywarn-unused",
   scalacOptions in console --= Seq(
     "-Xfatal-warnings"
