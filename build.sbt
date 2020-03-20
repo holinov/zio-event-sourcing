@@ -75,9 +75,9 @@ lazy val cassandraStorage =
     .dependsOn(core, serializerProtobuf)
 
 skip in publish := true
-scalaVersion in ThisBuild := "2.13.1"
+scalaVersion := "2.13.1"
 crossScalaVersions := Nil
-licenses := ("MIT", url("http://opensource.org/licenses/MIT"))
+licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 crossScalaVersions := Seq("2.12.10")
 
 lazy val root = project
