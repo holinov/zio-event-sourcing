@@ -18,7 +18,6 @@ def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] = Seq(
   scalacOptions in console --= Seq(
     "-Xfatal-warnings"
   ),
-  licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   zioDeps,
   addCompilerPlugin(scalafixSemanticdb),
   releaseCrossBuild := true,
@@ -76,6 +75,10 @@ lazy val cassandraStorage =
         exclude ("org.scala-lang.modules", "scala-collection-compat")
     )
     .dependsOn(core, serializerProtobuf)
+
+skip in publish := true
+crossScalaVersions := Nil
+licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 
 lazy val root = project
   .settings(skip in publish := true, crossScalaVersions := Nil, name := "zio-event-sourcing-all")
