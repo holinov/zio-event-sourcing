@@ -79,8 +79,8 @@ skip in publish := true
 crossScalaVersions := Nil
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 
-lazy val root = (project in file("."))
-  .aggregate(
+lazy val zioEs = (project in file("."))
+  .dependsOn(
     core,
     serializerProtobuf,
     fileStorage,
