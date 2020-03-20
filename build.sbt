@@ -21,6 +21,7 @@ def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] = Seq(
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   zioDeps,
   addCompilerPlugin(scalafixSemanticdb),
+  releaseCrossBuild := true,
   testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
 )
 
@@ -91,4 +92,4 @@ addCommandAlias("rel", "reload")
 addCommandAlias("com", "all compile test:compile it:compile")
 addCommandAlias("fix", "all compile:scalafix test:scalafix")
 addCommandAlias("fmt", "all scalafmtSbt scalafmtAll")
-addCommandAlias("rel", "core/release")
+addCommandAlias("crel", "core/release cross")
