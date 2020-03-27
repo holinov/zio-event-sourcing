@@ -4,7 +4,7 @@ import java.util.UUID
 
 import zio.{ Task, ZIO }
 import zio.es._
-import zio.es.serializers.protobuf.{ JournalTestModel, _ }
+import zio.es.serializers.protobuf._
 import zio.duration._
 import zio.test.Assertion._
 import zio.test.TestAspect._
