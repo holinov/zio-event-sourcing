@@ -122,6 +122,8 @@ object FileStorage {
         Stream.fromIterable(journal.events.map(e => ser.fromBytes(e.eventBlob.toByteArray)))
       })
     }
+
+    override def allIds: Stream[Throwable, String] = Stream.fail(???)
   }
 
   private def indexFile(storePath: Path) = storePath.resolve("index.data")

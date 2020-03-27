@@ -24,6 +24,9 @@ object CassandraStorage extends AsScalaConverters with AsJavaConverters {
     def execute(cql: String): Task[ResultSet]     = ZIO.effect(session.execute(cql))
     def execute(stmt: Statement): Task[ResultSet] = ZIO.effect(session.execute(stmt))
 
+    def executeStream(stmt: Statement): Stream[Throwable, Row] =
+      ZStream.fromJavaIterator(ZIO.effect(session.execute(stmt).iterator()))
+
     def useKeyspace(ks: String): Task[Unit]  = execute(s"USE $ks").unit
     def dropKeyspace(ks: String): Task[Unit] = execute(s"DROP KEYSPACE $ks").unit
     def ensureKeyspace(ks: String, replicationFactor: Int): Task[Unit] =
@@ -72,23 +75,29 @@ object CassandraStorage extends AsScalaConverters with AsJavaConverters {
     /**
      * Write event to journal (no loaded aggregates will be updated)
      */
-    override def persistEvent(key: String, event: E): Task[Unit] = insertEvent(key, event).unit
+    def persistEvent(key: String, event: E): Task[Unit] = insertEvent(key, event).unit
 
     /**
      * Load event stream from journal
      */
-    override def loadEvents(key: String): Stream[Throwable, E] =
+    def loadEvents(key: String): Stream[Throwable, E] =
       Stream.unwrap {
-        val selectStmt = ZIO.effect(QueryBuilder.select("entityId", "eventId", "payload").from(table).where {
-          QueryBuilder.eq("entityId", key)
-        })
-
         for {
-          stmt <- selectStmt
-          resI = session.execute(stmt).map(rr => rr.iterator()).orDie
+          stmt <- ZIO.effect(QueryBuilder.select("entityId", "eventId", "payload").from(table).where {
+            QueryBuilder.eq("entityId", key)
+          })
+          resI = session.execute(stmt).map(_.iterator()).orDie
           res  = Stream.fromJavaIterator[Throwable, Row](resI)
         } yield res
       }.map(row => ser.fromBytes(row.getBytes("payload").array()))
+
+    /**
+     * Stream of all entity ids stored
+     */
+    def allIds: Stream[Throwable, String] =
+      Stream
+        .fromJavaIterator(session.execute(s"SELECT DISTINCT entityId FROM $table").map(_.iterator()))
+        .map(_.getString(0))
   }
 
   /**

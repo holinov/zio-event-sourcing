@@ -78,7 +78,7 @@ lazy val cassandraStorage =
 crossScalaVersions := Seq("2.13.1", "2.12.10")
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 
-lazy val root = (project in file("."))
+lazy val zioEsRoot = (project in file("."))
   .settings(
     skip in publish := true,
     crossScalaVersions := Nil,
