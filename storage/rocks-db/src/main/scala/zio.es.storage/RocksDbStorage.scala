@@ -20,7 +20,7 @@ object RocksDbStorage {
   private def keyBytes(key: String) =
     ZIO.effectTotal(key.getBytes(UTF_8))
 
-  private def loadHistory(rdb: RocksDB, key: String): Task[RocksDbEventsJournalStore] = {
+  private def loadHistory(rdb: RocksDB.Service, key: String): Task[RocksDbEventsJournalStore] = {
     def loadHistoryInner(bytes: Option[Array[Byte]]) = bytes match {
       case None        => ZIO.effect(RocksDbEventsJournalStore.of(key, Seq.empty))
       case Some(bytes) => ZIO.effect(RocksDbEventsJournalStore.parseFrom(bytes))
@@ -38,7 +38,7 @@ object RocksDbStorage {
 
   private def bytesToBS(bytes: Array[Byte]): ByteString = ByteString.copyFrom(bytes)
 
-  class RocksDBStore[E](rdb: RocksDB)(
+  class RocksDBStore[E](rdb: RocksDB.Service)(
     implicit ser: SerializableEvent[E]
   ) extends EventJournal[E] {
 
@@ -85,7 +85,7 @@ object RocksDbStorage {
 
   def openRdb[E: SerializableEvent](path: Path): Managed[Throwable, RocksDBStore[E]] = {
     val opts = new jrocks.Options().setCreateIfMissing(true)
-    RocksDB.open(opts, path.toAbsolutePath.toString).map(new RocksDBStore[E](_))
+    Live.open(opts, path.toAbsolutePath.toString).map(new RocksDBStore[E](_))
   }
 
   def tmpRdb[E: SerializableEvent]: Managed[Throwable, RocksDBStore[E]] = tempDir.flatMap(openRdb[E])
