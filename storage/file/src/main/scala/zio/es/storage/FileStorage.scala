@@ -23,9 +23,10 @@ object FileStorage {
   private case class IndexData(
     entries: Map[String, EventJournalsIndex.Entry] = Map.empty.withDefault(k => EventJournalsIndex.Entry(k, 0))
   ) {
-    def withJournal(entityId: String, newJournal: EventsJournalStore): UIO[IndexData] = ZIO.effectTotal {
-      copy(entries = this.entries + (entityId -> EventJournalsIndex.Entry(entityId, newJournal.events.size.toLong)))
-    }
+    def withJournal(entityId: String, newJournal: EventsJournalStore): UIO[IndexData] =
+      ZIO.effectTotal {
+        copy(entries = this.entries + (entityId -> EventJournalsIndex.Entry(entityId, newJournal.events.size.toLong)))
+      }
 
     def apply(key: String): EventJournalsIndex.Entry = entries(key)
   }
@@ -43,10 +44,9 @@ object FileStorage {
         stream.close()
       }
       //      .map(new BufferedOutputStream(_))
-      .use(
-        out =>
-          ZIO.effect(data.writeTo(out)) <*
-            ZIO.effect(out.flush())
+      .use(out =>
+        ZIO.effect(data.writeTo(out)) <*
+          ZIO.effect(out.flush())
       )
 
   private case class WriteQueueEntry[E](entityId: String, payload: E, promise: Promise[Nothing, Unit])
@@ -117,23 +117,24 @@ object FileStorage {
     /**
      * Load event stream from journal
      */
-    override def loadEvents(key: String): Stream[Throwable, E] = ZStream.unwrap {
-      loadEntityJournal(key).map(journal => {
-        Stream.fromIterable(journal.events.map(e => ser.fromBytes(e.eventBlob.toByteArray)))
-      })
-    }
+    override def loadEvents(key: String): Stream[Throwable, E] =
+      ZStream.unwrap {
+        loadEntityJournal(key).map { journal =>
+          Stream.fromIterable(journal.events.map(e => ser.fromBytes(e.eventBlob.toByteArray)))
+        }
+      }
 
     override def allIds: Stream[Throwable, String] = Stream.fail(???)
   }
 
   private def indexFile(storePath: Path) = storePath.resolve("index.data")
 
-  private def loadIndex(storePath: Path): Task[IndexData] =
+  private def loadIndex(storePath: Path): Task[IndexData]  =
     for {
-      bytes <- readFile(indexFile(storePath))
+      bytes  <- readFile(indexFile(storePath))
       loaded <- ZIO
-        .effect(EventJournalsIndex.parseFrom(bytes))
-        .catchAll(_ => ZIO.succeed(EventJournalsIndex(Seq.empty)))
+                  .effect(EventJournalsIndex.parseFrom(bytes))
+                  .catchAll(_ => ZIO.succeed(EventJournalsIndex(Seq.empty)))
     } yield IndexData(loaded.index.map(v => v.entryId -> v).toMap)
 
   private def saveIndex(storePath: Path, index: IndexData) =

@@ -18,14 +18,13 @@ object EventJournalSpec extends DefaultRunnableSpec {
 
   val CalculatingAggregate = AggregateBehaviour
     .from(0f)
-    .aggregate[TestEvent](
-      (s, e) =>
-        ZIO.effect(e match {
-          case Add(v)  => s + v
-          case Subs(v) => s - v
-          case Mul(v)  => s * v
-          case Div(v)  => s / v
-        })
+    .aggregate[TestEvent]((s, e) =>
+      ZIO.effect(e match {
+        case Add(v)  => s + v
+        case Subs(v) => s - v
+        case Mul(v)  => s * v
+        case Div(v)  => s / v
+      })
     )
 
   val CalculatingAggregateIdentity = AggregateBehaviour[TestEvent, Float](
@@ -40,18 +39,18 @@ object EventJournalSpec extends DefaultRunnableSpec {
   )
 
   private val TestEntityName = "test1"
-  val aggregateTestSuite = suite("Aggregate")(
+  val aggregateTestSuite     = suite("Aggregate")(
     testM("appends events and calculates state") {
       for {
-        journal <- EventJournal.inMemory[TestEvent]
-        agg     <- journal.create(TestEntityName, CalculatingAggregate)
+        journal  <- EventJournal.inMemory[TestEvent]
+        agg      <- journal.create(TestEntityName, CalculatingAggregate)
         sumState <- agg.append(Add(10)) *>
-          agg.append(Add(20)) *>
-          agg.append(Mul(5)) *>
-          agg.append(Div(2)) *>
-          agg.append(Subs(3))
-        sum   <- sumState.state
-        state <- agg.state
+                      agg.append(Add(20)) *>
+                      agg.append(Mul(5)) *>
+                      agg.append(Div(2)) *>
+                      agg.append(Subs(3))
+        sum      <- sumState.state
+        state    <- agg.state
       } yield assert(sum)(equalTo(72.0f)) && assert(state)(equalTo(sum))
     }
   )

@@ -21,10 +21,11 @@ object RocksDbStorage {
     ZIO.effectTotal(key.getBytes(UTF_8))
 
   private def loadHistory(rdb: RocksDB, key: String): Task[RocksDbEventsJournalStore] = {
-    def loadHistoryInner(bytes: Option[Array[Byte]]) = bytes match {
-      case None        => ZIO.effect(RocksDbEventsJournalStore.of(key, Seq.empty))
-      case Some(bytes) => ZIO.effect(RocksDbEventsJournalStore.parseFrom(bytes))
-    }
+    def loadHistoryInner(bytes: Option[Array[Byte]]) =
+      bytes match {
+        case None        => ZIO.effect(RocksDbEventsJournalStore.of(key, Seq.empty))
+        case Some(bytes) => ZIO.effect(RocksDbEventsJournalStore.parseFrom(bytes))
+      }
 
     for {
       keyBytes          <- keyBytes(key)
@@ -38,8 +39,8 @@ object RocksDbStorage {
 
   private def bytesToBS(bytes: Array[Byte]): ByteString = ByteString.copyFrom(bytes)
 
-  class RocksDBStore[E](rdb: RocksDB)(
-    implicit ser: SerializableEvent[E]
+  class RocksDBStore[E](rdb: RocksDB)(implicit
+    ser: SerializableEvent[E]
   ) extends EventJournal[E] {
 
     /**
@@ -64,9 +65,10 @@ object RocksDbStorage {
         stream <- ZIO.effect(Stream.fromIterable(res.events))
       } yield stream.map(bytes => ser.fromBytes(bytes.eventBlob.toByteArray)))
 
-    def allIds: Stream[Throwable, String] = rdb.newIterator.map {
-      case (keyBytes, _) => new String(keyBytes, StandardCharsets.UTF_8)
-    }
+    def allIds: Stream[Throwable, String] =
+      rdb.newIterator.map {
+        case (keyBytes, _) => new String(keyBytes, StandardCharsets.UTF_8)
+      }
   }
 
   private def tempDir: Managed[Throwable, Path] =

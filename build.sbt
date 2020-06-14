@@ -1,5 +1,3 @@
-import sbt.Keys._
-
 resolvers ++= Seq(
   Resolver.mavenLocal,
   Resolver.sonatypeRepo("releases"),

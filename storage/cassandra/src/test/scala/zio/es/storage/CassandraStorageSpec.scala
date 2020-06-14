@@ -56,10 +56,8 @@ object CassandraStorageSpec extends DefaultRunnableSpec {
         createdState  <- aggregate.state
         loaded        <- store.load(entityId, testAggregate)
         loadedState   <- loaded.state
-      } yield {
-        assert(createdState)(hasSameElements(eventsSeq)) &&
+      } yield assert(createdState)(hasSameElements(eventsSeq)) &&
         assert(loadedState)(hasSameElements(eventsSeq))
-      }
     }
   }
 
