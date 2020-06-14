@@ -1,4 +1,3 @@
-import Versions._
 import sbt.Keys._
 
 resolvers ++= Seq(
@@ -8,27 +7,28 @@ resolvers ++= Seq(
   Resolver.jcenterRepo
 )
 
-def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] = Seq(
-  organization := "FruTTecH",
-  name := moduleName,
-  maxErrors := 3,
-  licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
-  scalacOptions += "-Ywarn-unused",
-  scalacOptions in console --= Seq(
-    "-Xfatal-warnings"
-  ),
-  zioDeps,
-  addCompilerPlugin(scalafixSemanticdb),
-  releaseCrossBuild := true,
-  testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework"))
-)
+def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] =
+  Seq(
+    organization := "FruTTecH",
+    name := moduleName,
+    maxErrors := 3,
+    licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
+    scalacOptions += "-Ywarn-unused",
+    scalacOptions in console --= Seq(
+      "-Xfatal-warnings"
+    ),
+    zioDeps,
+    releaseCrossBuild := true,
+    testFrameworks := Seq(new TestFramework("zio.test.sbt.ZTestFramework")),
+    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
+  )
 
 lazy val zioDeps = libraryDependencies ++= Seq(
-  "dev.zio"                %% "zio"                     % ZioVersion,
-  "dev.zio"                %% "zio-streams"             % ZioVersion,
-  "dev.zio"                %% "zio-test"                % ZioVersion % "test",
-  "dev.zio"                %% "zio-test-sbt"            % ZioVersion % "test",
-  "org.scala-lang.modules" %% "scala-collection-compat" % "2.1.4"
+  "dev.zio"                %% "zio"                     % Version.zio,
+  "dev.zio"                %% "zio-streams"             % Version.zio,
+  "dev.zio"                %% "zio-test"                % Version.zio % "test",
+  "dev.zio"                %% "zio-test-sbt"            % Version.zio % "test",
+  "org.scala-lang.modules" %% "scala-collection-compat" % "2.1.6"
 )
 
 lazy val protobufSettings = Seq(
@@ -59,8 +59,8 @@ lazy val rockDbStorage =
     .settings(protobufSettings: _*)
     .settings(
       libraryDependencies ++= Seq(
-        "dev.zio"     %% "zio-rocksdb" % ZioRocksDb exclude ("org.slf4j", "slf4j-api"),
-        "org.rocksdb" % "rocksdbjni"   % "5.5.1"
+        "dev.zio"    %% "zio-rocksdb" % Version.zioRocksDb exclude ("org.slf4j", "slf4j-api"),
+        "org.rocksdb" % "rocksdbjni"  % "5.5.1"
       )
     )
     .dependsOn(core, serializerProtobuf)
@@ -70,12 +70,12 @@ lazy val cassandraStorage =
     .settings(moduleSettings("zio-event-sourcing-cassandra-store"): _*)
     .settings(protobufSettings: _*)
     .settings(
-      libraryDependencies += "com.datastax.cassandra" % "cassandra-driver-core" % "3.8.0"
+      libraryDependencies += "com.datastax.cassandra" % "cassandra-driver-core" % Version.cassandra
         exclude ("org.scala-lang.modules", "scala-collection-compat")
     )
     .dependsOn(core, serializerProtobuf)
 
-crossScalaVersions := Seq("2.13.1", "2.12.10")
+crossScalaVersions := Seq("2.13.2", "2.12.11")
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 
 lazy val zioEsRoot = (project in file("."))

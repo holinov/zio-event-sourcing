@@ -1,0 +1,6 @@
+-Dfile.encoding=UTF8 
+-XX:+CMSClassUnloadingEnabled
+-Xmx2G
+-Xms2G
+-XX:MaxMetaspaceSize=1g
+-Xss8m
