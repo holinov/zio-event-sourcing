@@ -5,6 +5,8 @@ resolvers ++= Seq(
   Resolver.jcenterRepo
 )
 
+scalaVersion in ThisBuild := "2.13.3"
+
 def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] =
   Seq(
     organization := "FruTTecH",
@@ -12,7 +14,7 @@ def moduleSettings(moduleName: String): Seq[Def.SettingsDefinition] =
     maxErrors := 3,
     licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
     scalacOptions += "-Ywarn-unused",
-    scalacOptions in console --= Seq(
+    scalacOptions --= Seq(
       "-Xfatal-warnings"
     ),
     zioDeps,

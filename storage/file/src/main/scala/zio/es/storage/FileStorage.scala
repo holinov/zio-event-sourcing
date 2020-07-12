@@ -91,7 +91,10 @@ object FileStorage {
       ZStream
         .fromQueue(writeQueue)
         .buffer(BufferSize)
-        .aggregateAsyncWithin(Sink.collectAll[WriteQueueEntry[E]], Schedule.duration(BatchMaxDelay))
+        .aggregateAsyncWithin(
+          ZTransducer.collectAllN(1000),
+          Schedule.duration(BatchMaxDelay)
+        ) // FIXME - put valid value
         .map(_.groupBy(_.entityId))
         .mapM(groupedBatch => ZIO.foreachPar(groupedBatch)(zz => writeEntityEvents(zz._1, zz._2)))
         .mapM(_ => storeIndex)
