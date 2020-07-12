@@ -31,7 +31,7 @@ class Aggregate[-E, +S] private[es] (
 
 }
 
-trait SerializableEvent[E] extends Any with Serializable {
+trait SerializableEvent[E] extends  Serializable {
   def toBytes(evt: E): Array[Byte]
   def fromBytes(bytes: Array[Byte]): E
 }

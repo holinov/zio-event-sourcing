@@ -25,7 +25,7 @@ object CassandraStorage extends AsScalaConverters with AsJavaConverters {
     def execute(stmt: Statement): Task[ResultSet]                             = ZIO.effect(session.execute(stmt))
 
     def executeStream(stmt: Statement): Stream[Throwable, Row] =
-      ZStream.fromJavaIterator(ZIO.effect(session.execute(stmt).iterator()))
+      ZStream.fromJavaIterator(session.execute(stmt).iterator)
 
     def useKeyspace(ks: String): Task[Unit]                            = execute(s"USE $ks").unit
     def dropKeyspace(ks: String): Task[Unit]                           = execute(s"DROP KEYSPACE $ks").unit
@@ -87,7 +87,7 @@ object CassandraStorage extends AsScalaConverters with AsJavaConverters {
                     QueryBuilder.eq("entityId", key)
                   })
           resI  = session.execute(stmt).map(_.iterator()).orDie
-          res   = Stream.fromJavaIterator[Throwable, Row](resI)
+          res   = Stream.fromJavaIteratorEffect(resI)
         } yield res
       }.map(row => ser.fromBytes(row.getBytes("payload").array()))
 
@@ -96,7 +96,7 @@ object CassandraStorage extends AsScalaConverters with AsJavaConverters {
      */
     def allIds: Stream[Throwable, String] =
       Stream
-        .fromJavaIterator(session.execute(s"SELECT DISTINCT entityId FROM $table").map(_.iterator()))
+        .fromJavaIteratorEffect(session.execute(s"SELECT DISTINCT entityId FROM $table").map(_.iterator))
         .map(_.getString(0))
   }
 
