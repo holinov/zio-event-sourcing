@@ -73,7 +73,7 @@ lazy val cassandraStorage =
     )
     .dependsOn(core, serializerProtobuf)
 
-crossScalaVersions := Seq("2.13.2", "2.12.11")
+crossScalaVersions := Seq("2.13.3", "2.12.11")
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 
 lazy val zioEsRoot = (project in file("."))
