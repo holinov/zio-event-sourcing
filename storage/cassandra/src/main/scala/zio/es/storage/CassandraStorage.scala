@@ -21,14 +21,14 @@ object CassandraStorage extends AsScalaConverters with AsJavaConverters {
   implicit class StoreSessionOps(private val session: Session) extends AnyVal { // TODO: do all operations on blocking pool or using `executeAsync`
     def executeMap(cql: String, values: Map[String, AnyRef]): Task[ResultSet] = ZIO.effect(session.execute(cql, values))
 //    def execute(cql: String, values: Any*): Task[ResultSet]                   = ZIO.effect(session.execute(cql, values: _*))
-    def execute(cql: String): Task[ResultSet]     = ZIO.effect(session.execute(cql))
-    def execute(stmt: Statement): Task[ResultSet] = ZIO.effect(session.execute(stmt))
+    def execute(cql: String): Task[ResultSet]                                 = ZIO.effect(session.execute(cql))
+    def execute(stmt: Statement): Task[ResultSet]                             = ZIO.effect(session.execute(stmt))
 
     def executeStream(stmt: Statement): Stream[Throwable, Row] =
-      ZStream.fromJavaIterator(ZIO.effect(session.execute(stmt).iterator()))
+      ZStream.fromJavaIterator(session.execute(stmt).iterator)
 
-    def useKeyspace(ks: String): Task[Unit]  = execute(s"USE $ks").unit
-    def dropKeyspace(ks: String): Task[Unit] = execute(s"DROP KEYSPACE $ks").unit
+    def useKeyspace(ks: String): Task[Unit]                            = execute(s"USE $ks").unit
+    def dropKeyspace(ks: String): Task[Unit]                           = execute(s"DROP KEYSPACE $ks").unit
     def ensureKeyspace(ks: String, replicationFactor: Int): Task[Unit] =
       execute(
         s"""CREATE KEYSPACE IF NOT EXISTS $ks WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : $replicationFactor }""".stripMargin
@@ -56,13 +56,13 @@ object CassandraStorage extends AsScalaConverters with AsJavaConverters {
       def insertStmt(bytes: Array[Byte]): Task[RegularStatement] =
         for {
           eventId <- timeUuid
-          stmt <- ZIO.effect(
-            QueryBuilder
-              .insertInto(table)
-              .value("entityId", key)
-              .value("eventId", eventId)
-              .value("payload", ByteBuffer.wrap(bytes))
-          )
+          stmt    <- ZIO.effect(
+                       QueryBuilder
+                         .insertInto(table)
+                         .value("entityId", key)
+                         .value("eventId", eventId)
+                         .value("payload", ByteBuffer.wrap(bytes))
+                     )
         } yield stmt
 
       for {
@@ -84,10 +84,10 @@ object CassandraStorage extends AsScalaConverters with AsJavaConverters {
       Stream.unwrap {
         for {
           stmt <- ZIO.effect(QueryBuilder.select("entityId", "eventId", "payload").from(table).where {
-            QueryBuilder.eq("entityId", key)
-          })
-          resI = session.execute(stmt).map(_.iterator()).orDie
-          res  = Stream.fromJavaIterator[Throwable, Row](resI)
+                    QueryBuilder.eq("entityId", key)
+                  })
+          resI  = session.execute(stmt).map(_.iterator()).orDie
+          res   = Stream.fromJavaIteratorEffect(resI)
         } yield res
       }.map(row => ser.fromBytes(row.getBytes("payload").array()))
 
@@ -96,7 +96,7 @@ object CassandraStorage extends AsScalaConverters with AsJavaConverters {
      */
     def allIds: Stream[Throwable, String] =
       Stream
-        .fromJavaIterator(session.execute(s"SELECT DISTINCT entityId FROM $table").map(_.iterator()))
+        .fromJavaIteratorEffect(session.execute(s"SELECT DISTINCT entityId FROM $table").map(_.iterator))
         .map(_.getString(0))
   }
 

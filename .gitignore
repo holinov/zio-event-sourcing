@@ -6,3 +6,4 @@ target
 root/target
 project/target
 project/project
+project/metals.sbt

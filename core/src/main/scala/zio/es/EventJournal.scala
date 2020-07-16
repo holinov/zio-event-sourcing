@@ -31,19 +31,19 @@ class Aggregate[-E, +S] private[es] (
 
 }
 
-trait SerializableEvent[E] extends Any with Serializable {
+trait SerializableEvent[E] extends Serializable {
   def toBytes(evt: E): Array[Byte]
   def fromBytes(bytes: Array[Byte]): E
 }
 
 object SerializableEvent {
   implicit class SerializableEventOps[E](se: SerializableEvent[E]) {
-    def toBytesZ(evt: E): Task[Array[Byte]]     = ZIO.effect(se.toBytes(evt))
-    def fromBytesZ(bytes: Array[Byte]): Task[E] = ZIO.effect(se.fromBytes(bytes))
+    def toBytesZ(evt: E): Task[Array[Byte]]     = Task(se.toBytes(evt))
+    def fromBytesZ(bytes: Array[Byte]): Task[E] = Task(se.fromBytes(bytes))
   }
 }
 
-trait EventJournal[E] { ej =>
+trait EventJournal[E] { self =>
 
   /**
    * Write event to journal (no loaded aggregates will be updated)
@@ -90,8 +90,9 @@ object EventJournal {
     private[this] val store: ConcurrentHashMap[String, Vector[E]] = new ConcurrentHashMap()
 
     private def getEventsFor(key: String): Task[Vector[E]] =
-      ZIO.effect(store.computeIfAbsent(key, _ => Vector.empty[E]))
-    private def updateEventsFor(key: String, events: Vector[E]): Task[Unit] = ZIO.effect(store.put(key, events)).unit
+      Task(store.computeIfAbsent(key, _ => Vector.empty[E]))
+
+    private def updateEventsFor(key: String, events: Vector[E]): Task[Unit] = Task(store.put(key, events)).unit
 
     def persistEvent(key: String, event: E): Task[Unit] =
       for {
@@ -99,7 +100,7 @@ object EventJournal {
         _      <- updateEventsFor(key, events :+ event)
       } yield ()
 
-    def loadEvents(key: String): Stream[Throwable, E] = Stream.fromIterator(getEventsFor(key).map(_.iterator))
+    def loadEvents(key: String): Stream[Throwable, E] = Stream.fromIteratorEffect(getEventsFor(key).map(_.toIterator))
 
     def allIds: Stream[Throwable, String] = Stream.unwrap(knownIds.get.map(res => Stream.fromIterable(res)))
   }
@@ -107,7 +108,7 @@ object EventJournal {
   def inMemory[E]: Task[EventJournal[E]] =
     Ref
       .make(Set.empty[String])
-      .flatMap(stateRef => ZIO.effect(new InMemory[E](stateRef)))
+      .flatMap(stateRef => Task(new InMemory[E](stateRef)))
 
   def aggregate[E, S](initial: S)(aggregations: (S, E) => Task[S]): Task[AggregateBehaviour[E, S]] =
     ZIO.succeed(new AggregateBehaviour(initial, aggregations))
